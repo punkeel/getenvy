@@ -21,6 +21,7 @@ char *getenv(const char *name)
             return NULL;
         }
     }
+    char *result = orig_getenv(name); 
     if (verbose) {
         const char *p;
         fprintf(stderr, "getenv(\"");
@@ -33,9 +34,20 @@ char *getenv(const char *name)
             else
                 fprintf(stderr, "%c", c);
         }
-        fprintf(stderr, "\")\n");
+        fprintf(stderr, "\")=\"");
+        // Print the result
+        for (p=result; *p; p++) {
+            unsigned char c = *p;
+            if (c == '\\' || c == '"')
+                fprintf(stderr, "\\%c", c);
+            else if (c < ' ' || c >= 0x7F)
+                fprintf(stderr, "\\x%02x", c);
+            else
+                fprintf(stderr, "%c", c);
+        }
+        fprintf(stderr, "\"\n");
     }
-    return orig_getenv(name);
+    return result;
 }
 
 /* vim:set ts=4 sts=4 sw=4 et:*/
